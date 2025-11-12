@@ -1,0 +1,23 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="px-10 py-8 bg-gray-100 rounded-lg">
+        <div class="grid gap-6 border">
+            {% for conversation in conversations %}
+                <a href="{% url 'chatbox:inbox_detail' conversation.id %}">
+                    <div class="flex items-start gap-4 px-6 py-4 border border-gray-200 rounded-lg">
+                        <img src="{{ conversation.work.profile_pic.url }}" alt="profile-picture" class="rounded-full object-cover w-40 h-40">
+                        <div class="flex-1 flex flex-col justify-start gap-2 mt-10">
+                            {% for member in conversation.members.all %}
+                                {% if member != request.user %}
+                                    <h1 class="text-xl text-gray-700 font-bold">{{ member.username }}</h1><p> | {{ conversation.modified_at}}</p>
+                                    <p class="text-l text-gray-700 font-semibold">{{ conversation.work.work_title }}</p>
+                                    {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

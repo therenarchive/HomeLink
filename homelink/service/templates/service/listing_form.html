@@ -1,0 +1,120 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+        <div class="bg-gray-100 w-1/2 px-10 py-6 mx-auto rounded-xl">
+        <h1 class="mb-5 text-xl font-bold">Add your Service</h1>
+        <form method="post" action="." enctype="multipart/form-data">
+            {% csrf_token %}
+            <div>
+                <label>Service title:<br>
+                    {{ form.work_title }}
+                </label>
+            </div>
+            <div>
+                <label>Category:<br>
+                    {{ form.category }}
+                </label>
+            </div>
+            <div>
+                <label>Description:<br>
+                    {{ form.description }}
+                </label>
+            </div>
+            <div>
+                <label>Price:<br>
+                    {{ form.price }}
+                </label>
+            </div>
+            <div>
+                <label>Profile picture:<br>
+                    {{ form.profile_pic }}
+                </label>
+            </div>
+
+            <div id="map" class="h-96"></div>
+            <div class="flex justify-center"><button type="button" id="locateBtn" class="rounded bg-blue-300 text-white text-lg font-semibold px-3 py-1 mt-4 ">📍 Use My Location</button></div>
+            {{ form.latitude }}
+            {{ form.longitude }}
+
+            {% if form.errors or form.non_field_errors  %}
+                <div class="mt-6 px-5 py-3 bg-red-100 rounded-xl">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p>{{ field.label}}: {{ error}}</p>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            <div class="flex justify-end">
+                <button class="px-6 py-2 mt-5 bg-green-400 rounded-xl font-semibold text-white">Upload</button>
+            </div>
+        </form> 
+    </div>
+
+    <!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Geocoder plugin -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+<script>
+  // Initialize the map
+  var map = L.map('map').setView([9.024, 38.746], 8);
+
+  // Add OSM tiles
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Marker variable
+  var marker;
+
+  // Add geocoder search bar
+  var geocoder = L.Control.geocoder({
+    defaultMarkGeocode: false
+  })
+  .on('markgeocode', function(e) {
+    var latlng = e.geocode.center;
+
+    if (marker) map.removeLayer(marker);
+    marker = L.marker(latlng).addTo(map);
+    map.setView(latlng, 13);
+
+    document.getElementById('id_latitude').value = latlng.lat;
+    document.getElementById('id_longitude').value = latlng.lng;
+  })
+  .addTo(map);
+
+  // Allow clicking to set a marker manually
+  map.on('click', function(e) {
+    if (marker) map.removeLayer(marker);
+    marker = L.marker(e.latlng).addTo(map);
+    document.getElementById('id_latitude').value = e.latlng.lat;
+    document.getElementById('id_longitude').value = e.latlng.lng;
+  });
+
+  // Handle "Use My Location" button
+  document.getElementById('locateBtn').addEventListener('click', function() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng]).addTo(map).bindPopup("Your Location").openPopup();
+        map.setView([lat, lng], 13);
+
+        document.getElementById('id_latitude').value = lat;
+        document.getElementById('id_longitude').value = lng;
+      }, function() {
+        alert("Location access denied or unavailable.");
+      });
+    } else {
+      alert("Geolocation not supported in this browser.");
+    }
+  });
+</script>
+{% endblock %}

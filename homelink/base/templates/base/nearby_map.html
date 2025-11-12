@@ -1,0 +1,35 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="w-full h-[600px]" id="map"></div>
+
+<!-- Leaflet JS & CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    var map = L.map('map').setView([9.024, 38.746], 8);
+     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Load worker data from Django
+  fetch("{% url 'base:workers_json' %}")
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(worker => {
+        var marker = L.marker([worker.lat, worker.lng]).addTo(map);
+        marker.bindPopup(`
+          <b>${worker.title}</b><br>
+          ${worker.category}<br>
+          <a href="${worker.detail_url}" class="text-blue-600 underline">
+          View Details →
+        </a>
+        `);
+      });
+    })
+    .catch(error => console.error('Error loading worker data:', error));
+</script>
+</script>
+{% endblock %}

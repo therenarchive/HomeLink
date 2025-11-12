@@ -1,0 +1,67 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="px-10 py-8 bg-gray-100 rounded-lg">
+      {% if request.user.is_staff %}
+        <div class="overflow-x-auto mt-6">
+          <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Month</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Total Revenue (SAR)</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for data in monthly_revenue %}
+                <tr class="hover:bg-gray-50 transition duration-200">
+                  <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-medium">{{ data.month|date:"F Y" }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-gray-800 font-semibold">${{ data.total_revenue|floatformat:2 }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="2" class="px-6 py-4 text-center text-gray-500">No revenue yet</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+
+        {% if request.user.profile.acc_type == 'worker' %}
+            <div class="flex justify-end gap-3 mb-5">
+                <a href="{% url 'service:new_work' %}" class="bg-green-400 rounded-lg px-8 py-4 text-white">Add New Work</a>
+            </div>
+            <div class=" border">
+                {% if services %}
+                    {% for work in works %}
+                    <div class="flex items-start gap-4 px-6 py-4 border border-gray-200 rounded-lg mb-5">
+                        {% if work.profile_pic %}
+                            <img src="{{ work.profile_pic.url }}" alt="profile-picture" class="rounded-full object-cover w-40 h-40">
+                        {% else %}
+                            
+                        {% endif %}
+                        <div class="flex-1 flex flex-col justify-start gap-2">
+                            <h1 class="text-xl text-gray-700 font-bold">{{ work.work_title }}</h1>
+                            <p class="text-l text-gray-700 font-semibold">{{ work.description }}</p>
+                        </div>
+                        <div class="flex flex-col justify-between items-end h-40 gap-2">
+                            <p class="text-lg text-gray-700 text-right font-bold">${{ work.price }}</p>
+                            <a href="{% url 'service:service_detail' work.id %}" class="px-4 py-2 bg-blue-400 border border-blue-400 text-white rounded-lg">View Detail</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="flex justify-center mt-5 mb-5">
+                        <h2 class="text-xl text-center text-gray-600 font-bold bg-white rounded-lg shadow-lg px-5 py-3">You Have No Services</h2>
+                  </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        <div class="flex justify-end mt-5">
+            <form method="post" action="{% url 'base:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg">Logout</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL='/login/'
+LOGIN_REDIRECT_URL='/dashboard/'
+LOGOUT_REDIRECT_URL='/'
 
 # Application definition
 
@@ -38,8 +41,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'base'
+    'base.apps.BaseConfig',
+    'service',
+    'dashboard',
+    'chatbox',
 ]
+
+CHAPA_SECRET_KEY = "CHASECK_TEST-Tt23HKdamIpdF7dTVfeh9WVCWGwnYFmn"
+CHAPA_PUBLIC_KEY = "CHAPUBK_TEST-knxquZ8hWLiIVegKHblenxh3BAn5fewQ"
+CHAPA_CALLBACK_URL = "http://127.0.0.1:8000/service/payment/verify/"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,6 +74,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'service.context_processors.categories_processor',
             ],
         },
     },
@@ -118,6 +130,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

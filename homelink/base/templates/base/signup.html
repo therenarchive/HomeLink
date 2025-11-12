@@ -1,0 +1,49 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+    <div class="bg-gray-100 w-1/2 px-10 py-6 mx-auto rounded-xl">
+        <h1 class="mb-5 text-xl font-bold">Sign Up</h1>
+        <form method="post" action=".">
+            {% csrf_token %}
+            <div>
+                <label>Username:<br>
+                    {{ form.username }}
+                </label>
+            </div>
+            <div>
+                <label>Email:<br>
+                    {{ form.email }}
+                </label>
+            </div>
+            <div>
+                <label>Account Type:<br>
+                    {{ form.acc_type }}
+                </label>
+            </div>
+            <div>
+                <label>Password:<br>
+                    {{ form.password1 }}
+                </label>
+            </div>
+            <div>
+                <label>Enter Password again:<br>
+                    {{ form.password2 }}
+                </label>
+            </div>
+            {% if form.errors or form.non_field_errors  %}
+                <div class="mt-6 px-5 py-3 bg-red-100 rounded-xl">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p>{{ field.label}}: {{ error}}</p>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            <div class="flex justify-end">
+                <button class="px-6 py-2 mt-5 bg-green-400 rounded-xl font-semibold text-white">sign up</button>
+            </div>
+        </form> 
+    </div>
+{% endblock %}
