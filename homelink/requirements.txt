@@ -1,0 +1,10 @@
+chapa==0.1.2
+dj-database-url==1.2.0
+Django==5.2
+django-allauth==65.4.1
+django-crispy-forms==2.3
+django-tailwind==4.0.1
+django_chapa==1.4.0
+pillow==11.2.1
+requests==2.32.3
+
